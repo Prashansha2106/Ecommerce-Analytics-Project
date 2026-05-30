@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce Sales Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+
+<body>
+
+  <html lang="en" data-theme="dark">
+
+  </html>
+
+  <div class="layout">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="logo">📦 StoreIQ</div>
+
+      <nav>
+        <p class="nav-label">Overview</p>
+        <a class="nav-item active" href="#">◼ Dashboard</a>
+        <a class="nav-item" href="#">📈 Sales</a>
+        <a class="nav-item" href="#">💰 Profit</a>
+
+        <p class="nav-label">Analysis</p>
+        <a class="nav-item" href="#">🗂 Categories</a>
+        <a class="nav-item" href="#">🌍 Regions</a>
+        <a class="nav-item" href="#">📦 Products</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Dataset</p>
+        <strong>Sample Superstore</strong>
+        <p>9,994 records</p>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <main class="main">
+
+      <!-- Top Bar -->
+      <div class="topbar">
+        <div>
+          <h1 class="page-title">E-commerce Sales Analytics</h1>
+          <p class="page-sub">Superstore · 2016–2019 · All Regions</p>
+        </div>
+        <div class="filters">
+          <button class="chip active" onclick="filterYear('all', this)">All Years</button>
+          <button class="chip" onclick="filterYear(2016, this)">2016</button>
+          <button class="chip" onclick="filterYear(2017, this)">2017</button>
+          <button class="chip" onclick="filterYear(2018, this)">2018</button>
+          <button class="chip" onclick="filterYear(2019, this)">2019</button>
+          <button class="export-btn" onclick="exportDashboard()">⬇ Export PNG</button>
+
+          <!-- place this next to your year filter chips -->
+          <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        </div>
+      </div>
+
+      <!-- KPI Cads -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon blue">💵</span>
+            <span class="badge green">↑ 20.4%</span>
+          </div>
+          <div class="kpi-value" id="kpi-sales">$2.30M</div>
+          <div class="kpi-label">Total Sales</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon green">📊</span>
+            <span class="badge green">↑ 14.2%</span>
+          </div>
+          <div class="kpi-value" id="kpi-profit">$286K</div>
+          <div class="kpi-label">Total Profit</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon amber">🛒</span>
+            <span class="badge green">↑ 9.3%</span>
+          </div>
+          <div class="kpi-value" id="kpi-orders">5,009</div>
+          <div class="kpi-label">Total Orders</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon red">📦</span>
+            <span class="badge green">12.47%</span>
+          </div>
+          <div class="kpi-value" id="kpi-margin">12.47%</div>
+          <div class="kpi-label">Profit Margin</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="chart-row">
+        <div class="card wide">
+          <div class="card-title">Monthly Sales Trend</div>
+          <canvas id="trendChart"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Sales by Category</div>
+          <canvas id="catChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="chart-row">
+        <div class="card">
+          <div class="card-title">Profit by Region</div>
+          <canvas id="regionChart"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Top Sub-Categories</div>
+          <canvas id="subCatChart"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Sales by Segment</div>
+
+          <!-- Progress Bars -->
+          <div class="progress-list">
+            <div class="progress-item">
+              <div class="progress-top">
+                <span>Consumer</span><span>51%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill blue" style="width:51%"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-top">
+                <span>Corporate</span><span>31%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill green" style="width:31%"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-top">
+                <span>Home Office</span><span>19%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill amber" style="width:19%"></div>
+              </div>
+            </div>
+          </div>
+
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search products..."
+            oninput="searchTable()" />
+
+          <!-- Top Products Table -->
+          <p class="card-title" style="margin-top:24px;">Top Products</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable(0)" style="cursor:pointer">Product ↕</th>
+                <th onclick="sortTable(1)" style="cursor:pointer">Cat ↕</th>
+                <th onclick="sortTable(2)" style="cursor:pointer">Sales ↕</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Canon imageCLASS</td>
+                <td><span class="tag blue">Tech</span></td>
+                <td>$61.6K</td>
+              </tr>
+              <tr>
+                <td>Fellowes PB500</td>
+                <td><span class="tag blue">Tech</span></td>
+                <td>$27.5K</td>
+              </tr>
+              <tr>
+                <td>Cisco TelePresence</td>
+                <td><span class="tag blue">Tech</span></td>
+                <td>$22.6K</td>
+              </tr>
+              <tr>
+                <td>HON 5400 Series</td>
+                <td><span class="tag green">Furn</span></td>
+                <td>$21.9K</td>
+              </tr>
+              <tr>
+                <td>GBC DocuBind</td>
+                <td><span class="tag amber">Office</span></td>
+                <td>$19.8K</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
